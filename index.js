@@ -1,24 +1,26 @@
-const { promt } = require('inquirer');
-const logo = require('asciiart-logo');
-const db = require('./db');
+const { prompt } = require("inquirer");
+const logo = require("asciiart-logo");
+const db = require("./db");
 
-init();
+
+
+// init();
 
 function init() {
     const logoText = logo({ name: 'Employee Tracker' }).render();
 
     console.log(logoText);
 
-    loadMainPromts();
+    loadMainPrompts();
 }
 
-const loadMainPromts = () => {
-    promt([
+const loadMainPrompts = async () => {
+    const res = await prompt([
         {
             type: 'list',
-            name: 'selections',
+            name: 'choice',
             message: 'How would you like to proceed?',
-            selections: [
+            choices: [
                 {
                     name: 'View All Employees',
                     value: 'VIEW_EMPLOYEES'
@@ -82,8 +84,8 @@ const loadMainPromts = () => {
             ]
         }
     ]).then(res => {
-        let selection = res.selection;
-        switch (selection) {
+        let choice = res.choice;
+        switch (choice) {
             case 'VIEW_EMPLOYEES':
                 viewEmployees();
                 break;
@@ -131,3 +133,15 @@ const loadMainPromts = () => {
         }
     })
 }
+
+function viewEmployees() {
+    db.findAllEmployees()
+    .then(([rows]) => {
+        let employees = rows;
+        console.log('\n');
+        console.table(employees)
+    })
+    .then(() => loadMainPrompts());
+}
+
+init();
